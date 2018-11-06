@@ -5,10 +5,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <cstring>
+#include <sstream>
+#include <regex>
 
 using namespace std;
 const int NUM_EMPLOYEES = 6;
+const int NUM_SPACES = 10;
+int lineCount = 0;
 
 struct Employee {
 	int    number;
@@ -17,27 +20,48 @@ struct Employee {
 	int    hoursWorked;
 };
 
-
 int main()
 {
-	int lineCount = 0;
-	Employee employeeList[NUM_EMPLOYEES];
+	//int lineCount = 0;
 	string line;
-	ifstream employees("input.txt");
+	string employeeStringArray[NUM_EMPLOYEES];
+	ifstream table("input.txt");
 
-	//to split string into tokens
-	char * pch;
-	pch = strtok(" ", line);
-
-	if (employees.is_open()) {
-		
-		while (getline(employees, line)){
-			
+	if (table.is_open()) {
+		while (getline(table, line)) {
+			employeeStringArray[lineCount] = line;
+			lineCount++;
 		}
-		
-		employees.close();	
 	}
 
-    return 0;
-}
 
+	string delimiter = " ";
+	ofstream print("output.txt");
+	Employee employeeStructArray[NUM_EMPLOYEES];
+	double grossPay;
+	double totalPay = 0;
+	if (print.is_open()) {
+		for (int i = 0; i < lineCount; i++) {			
+			employeeStructArray[i].number = stoi(employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter)));
+			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter)-1 );
+
+			employeeStructArray[i].name = employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter));
+			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter) -1 );
+
+			employeeStructArray[i].hourlyPay = stod(employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter)));
+			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter) -1 );
+
+			employeeStructArray[i].hoursWorked = stoi(employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter)));
+			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter)-1);
+
+			grossPay = employeeStructArray[i].hourlyPay * employeeStructArray[i].hoursWorked;
+			totalPay += grossPay;
+
+			print << employeeStructArray[i].number << ",\t" << employeeStructArray[i].name << ",\t" << grossPay << "\n";
+			
+		}
+		print << totalPay;
+		print.close();
+	}
+}
+	

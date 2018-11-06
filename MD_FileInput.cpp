@@ -7,14 +7,14 @@
 #include <string>
 #include <sstream>
 #include <regex>
+#include <iomanip>
 
 using namespace std;
-const int NUM_EMPLOYEES = 6;
-const int NUM_SPACES = 10;
-int lineCount = 0;
+const int SIZE = 6;
+
 
 struct Employee {
-	int    number;
+	int    id;
 	string name;
 	double hourlyPay;
 	int    hoursWorked;
@@ -22,46 +22,41 @@ struct Employee {
 
 int main()
 {
-	//int lineCount = 0;
-	string line;
-	string employeeStringArray[NUM_EMPLOYEES];
-	ifstream table("input.txt");
-
-	if (table.is_open()) {
-		while (getline(table, line)) {
-			employeeStringArray[lineCount] = line;
-			lineCount++;
-		}
-	}
-
-
-	string delimiter = " ";
-	ofstream print("output.txt");
-	Employee employeeStructArray[NUM_EMPLOYEES];
+	cout << "hi\n";
+	ifstream data("input.txt");
+	ofstream report("output.txt");
+	Employee employee[SIZE];
 	double grossPay;
 	double totalPay = 0;
-	if (print.is_open()) {
-		for (int i = 0; i < lineCount; i++) {			
-			employeeStructArray[i].number = stoi(employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter)));
-			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter)-1 );
 
-			employeeStructArray[i].name = employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter));
-			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter) -1 );
+	cout << fixed;
+	cout << setprecision(2);
+	report << fixed;
+	report << setprecision(2);
 
-			employeeStructArray[i].hourlyPay = stod(employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter)));
-			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter) -1 );
-
-			employeeStructArray[i].hoursWorked = stoi(employeeStringArray[i].substr(0, employeeStringArray[i].find(delimiter)));
-			employeeStringArray[i].erase(0, employeeStringArray[i].find(delimiter)-1);
-
-			grossPay = employeeStructArray[i].hourlyPay * employeeStructArray[i].hoursWorked;
-			totalPay += grossPay;
-
-			print << employeeStructArray[i].number << ",\t" << employeeStructArray[i].name << ",\t" << grossPay << "\n";
+	if (data.is_open() && report.is_open()) {
+		cout << "Retrieving input\n";
+		for (int i = 0; i < SIZE; i++) {
+			//get data from file
+			data >> employee[i].id >> employee[i].name >> employee[i].hourlyPay >> employee[i].hoursWorked;
 			
+			//calculate gross pay
+			grossPay = employee[i].hourlyPay*employee[i].hoursWorked;
+			totalPay += grossPay;
+			cout << employee[i].id << " " << employee[i].name << " " << grossPay << "\n";
 		}
-		print << totalPay;
-		print.close();
+		//total pay
+		cout << totalPay << "\n";
+		
+		//write to output file
+		cout << "Writing to output file\n";
+		for (int i = 0; i < SIZE; i++) {
+			report << employee[i].id << " " << employee[i].name << " " << grossPay << "\n";
+		}
+		report << totalPay;
+		
 	}
+
+
 }
 	
